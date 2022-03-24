@@ -18,7 +18,6 @@ RootJs.prototype.launching = async function () {
 
     console.log("It works!");
 
-
   } catch (e) {
     console.log(e);
   }
