@@ -3,7 +3,7 @@ const Index = function () {
   this.mother = new Mother();
 }
 
-Index.prototype.main = async function () {
+Index.prototype.connect = async function () {
   const instance = this;
   const PORT = 3000;
   const http = require("http");
@@ -40,4 +40,4 @@ Index.prototype.main = async function () {
 }
 
 const app = new Index();
-app.main();
+app.connect();

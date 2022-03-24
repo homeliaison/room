@@ -6,12 +6,14 @@ const Router = function (MONGOC) {
 
 Router.prototype.rou_get_First = function () {
   const instance = this;
+  const fs = require('fs');
   let obj = {};
   obj.link = "/";
   obj.func = function (req, res) {
+    res.set({ "Content-Type": "text/plain" });
     try {
-      res.set({ "Content-Type": "text/plain" });
-      res.send("hi");
+      const stream = fs.createReadStream(process.cwd() + "/data.txt");
+      stream.pipe(res);
     } catch (e) {
       console.log(e);
     }
