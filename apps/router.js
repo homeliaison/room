@@ -6,16 +6,30 @@ const Router = function (MONGOC) {
 
 Router.prototype.rou_get_First = function () {
   const instance = this;
-  const fs = require('fs');
+  const fs = require("fs");
+  const { fileSystem } = this.mother;
   let obj = {};
-  obj.link = "/";
-  obj.func = function (req, res) {
-    res.set({ "Content-Type": "text/plain" });
+  obj.link = "/:id";
+  obj.func = async function (req, res) {
+    res.set({
+      "Content-Type": "text/html",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, GET, OPTIONS, HEAD",
+      "Access-Control-Allow-Headers": "Content-Type, Accept, X-Requested-With, remember-me",
+    });
     try {
-      const stream = fs.createReadStream(process.cwd() + "/data.txt");
-      stream.pipe(res);
+      const dist = process.cwd() + "/front/dist";
+      let stream;
+      if (await fileSystem("exist", [ dist + "/" + req.params.id + ".html" ])) {
+        stream = fs.createReadStream(dist + "/" + req.params.id + ".html");
+        stream.pipe(res);
+      } else {
+        throw new Error("invaild id");
+      }
     } catch (e) {
       console.log(e);
+      console.log(req.url);
+      res.send("<h1>invaild id</h1>");
     }
   }
   return obj;
@@ -89,6 +103,7 @@ Router.prototype.rou_post_generalMongo = function () {
 
       res.send(JSON.stringify(result));
     } catch (e) {
+      console.log(e);
       res.send({ message: e.message });
     }
   }
@@ -101,13 +116,17 @@ Router.prototype.getAll = function () {
   result = { get: [], post: [] };
   result_arr = Object.keys(Router.prototype);
 
-  for (let i of result_arr) { if (/^rou_get/g.test(i)) {
-    result.get.push((this[i])());
-  }}
+  for (let i of result_arr) {
+    if (/^rou_get/.test(i)) {
+      result.get.push((this[i])());
+    }
+  }
 
-  for (let i of result_arr) { if (/^rou_post/g.test(i)) {
-    result.post.push((this[i])());
-  }}
+  for (let i of result_arr) {
+    if (/^rou_post/.test(i)) {
+      result.post.push((this[i])());
+    }
+  }
 
   return result;
 }
